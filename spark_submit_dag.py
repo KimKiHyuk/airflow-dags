@@ -1,6 +1,7 @@
 from airflow.operators import python_operator
 from airflow import DAG
 from airflow.utils.dates import days_ago
+import boto3
 
 def greeting(*args):
     print('executed')
