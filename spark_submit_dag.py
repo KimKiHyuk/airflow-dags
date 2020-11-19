@@ -3,8 +3,7 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 
 def greeting(*args):
-    import logging 
-    logging.info(args)
+    print('executed')
 
 with DAG('spark-submit-dag', 
     description='Python DAG', 
