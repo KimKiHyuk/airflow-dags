@@ -1,4 +1,7 @@
 from airflow.operators import python_operator
+from datetime import timedelta
+from airflow import DAG
+
 dag = DAG(dag_id='test',
         schedule_interval='*/5 * * * *',
         dagrun_timeout=timedelta(seconds=5))
