@@ -1,9 +1,12 @@
 from airflow.operators import python_operator
 from airflow import DAG
 from airflow.utils.dates import days_ago
+from datetime import timedelta
+
 import boto3
 import os
 import logging
+
 LOGGER = logging.getLogger("airflow.task")
 
 def start():
@@ -25,8 +28,8 @@ def done():
 
 with DAG('spark-submit-dag', 
     description='Python DAG', 
-    schedule_interval='* 6 * * *', 
-    start_date=days_ago(1)) as dag:
+    schedule_interval=timedelta(days=1), 
+    start_date=days_ago(0)) as dag:
 
     taks_start = python_operator.PythonOperator(
         task_id='start',
