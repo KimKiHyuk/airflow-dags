@@ -147,7 +147,7 @@ airflow:
   ## digits (0-9), lower case letters (a-z), -, and .
   cloneDagFilesFromGit:
     enabled: true
-    repository: https://github.com/KimKiHyuk/airflow-dags
+    repository: https://github.com/KimKiHyuk/airflow-dags/dags
     branch: master
   clonePluginsFromGit:
     enabled: false
