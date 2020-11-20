@@ -6,26 +6,41 @@ import os
 
 LOGGER = logging.getLogger("airflow.task")
 
-def greeting(*args):
-    LOGGER.info(args)
+def start():
+    LOGGER.info('start flow')
     print(os.environ)
+
+def create():
+    LOGGER.info('create emr')
+
+def execute():
+    LOGGER.info('execute spark')
+
+def destory():
+    LOGGER.info('destroy emr')
+
+def done():
+    LOGGER.info('done flow')
 
 with DAG('spark-submit-dag', 
     description='Python DAG', 
     schedule_interval='* 6 * * *', 
     start_date=days_ago(1)) as dag:
 
-    taks_1 = python_operator.PythonOperator(
+    taks_start = python_operator.PythonOperator(
         task_id='start',
-        python_callable=greeting, op_args=['start'])
-    taks_2_1 = python_operator.PythonOperator(
-        task_id='mid_1',
-        python_callable=greeting, op_args=['mid_1'])
-    taks_2_2 = python_operator.PythonOperator(
-        task_id='mid_2',
-        python_callable=greeting, op_args=['mid_2'])
-    taks_3 = python_operator.PythonOperator(
-        task_id='end',
-        python_callable=greeting, op_args=['mid_2'])
-
-    taks_1 >> [taks_2_1, taks_2_2] >> taks_3
+        python_callable=start)
+    taks_create = python_operator.PythonOperator(
+        task_id='create',
+        python_callable=create)
+    taks_execute = python_operator.PythonOperator(
+        task_id='execute',
+        python_callable=execute)
+    taks_destroy = python_operator.PythonOperator(
+        task_id='destroy',
+        python_callable=destory)
+    taks_done = python_operator.PythonOperator(
+        task_id='done',
+        python_callable=done)
+    
+    taks_start >> taks_create >> taks_execute >> taks_destroy >> taks_done
