@@ -2,14 +2,18 @@ from airflow.operators import python_operator
 from airflow import DAG
 from airflow.utils.dates import days_ago
 import boto3
+import os
+
+LOGGER = logging.getLogger("airflow.task")
 
 def greeting(*args):
-    print('executed')
+    LOGGER.info(args)
+    print(os.environ)
 
 with DAG('spark-submit-dag', 
     description='Python DAG', 
-    schedule_interval='0 * * * *', 
-    start_date=days_ago(2)) as dag:
+    schedule_interval='* 6 * * *', 
+    start_date=days_ago(1)) as dag:
 
     taks_1 = python_operator.PythonOperator(
         task_id='start',
