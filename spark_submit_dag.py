@@ -3,11 +3,12 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 import boto3
 import os
-
+import logging
 LOGGER = logging.getLogger("airflow.task")
 
 def start():
     LOGGER.info('start flow')
+    LOGGER.info(boto3.__version__)
     print(os.environ)
 
 def create():
