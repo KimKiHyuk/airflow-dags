@@ -1,13 +1,9 @@
 from airflow.operators import python_operator
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOperator
-from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreateJobFlowOperator
-from airflow.providers.amazon.aws.operators.emr_terminate_job_flow import EmrTerminateJobFlowOperator
-from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
-
 from datetime import timedelta
 
+import boto3
 import os
 import logging
 
@@ -19,15 +15,39 @@ def start():
     LOGGER.INFO(os.environ['AIRFLOW__AWS__SECRET'])
     LOGGER.INFO(os.environ)
 
+def execute(cluster_id: str):
+    connection = boto3.client(
+        'emr',
+        region_name='us-east-2',
+        aws_access_key_id=os.environ['AIRFLOW__AWS__ACCESS_KEY'],
+        aws_secret_access_key=os.environ['AIRFLOW__AWS__SECRET_KEY'],
+    )
 
-def create():
-    LOGGER.info('create emr')
+    if cluster_id != '':
+        LOGGER.info(f'run jobs on {cluster_id}')
+        step = {
+            'Name': 'process-avro',
+            'ActionOnFailure': 'CONTINUE',
+            'HadoopJarStep': {
+                    'Jar': 'command-runner.jar',
+                    'Args': [
+                        'spark-submit',
+                        '--packages',
+                        'org.apache.spark:spark-avro_2.11:2.4.6', 
+                        '--class',
+                        'org.apache.spark.deploy.dotnet.DotnetRunner',
+                        '--master',
+                        'yarn',
+                        's3://spark-app-vjal1251/jars/microsoft-spark-2-4_2.11-1.0.0.jar',
+                        's3://spark-app-vjal1251/dll/emrApp.dll', 
+                        's3a://spark-data-vjal1251/topics/orders/partition=0', 
+                        's3a://spark-data-vjal1251/result']
+            }
+        }
 
-def execute():
-    LOGGER.info('execute spark')
-
-def destory():
-    LOGGER.info('destroy emr')
+        action = connection.add_job_flow_steps(JobFlowId=cluster_id, Steps=[step])
+    else:
+        LOGGER.info('cluster_id is empty')
 
 def done():
     LOGGER.info('done flow')
@@ -45,10 +65,7 @@ with DAG('spark-emr-dag',
         python_callable=create)
     taks_execute = python_operator.PythonOperator(
         task_id='execute',
-        python_callable=execute)
-    taks_destroy = python_operator.PythonOperator(
-        task_id='destroy',
-        python_callable=destory)
+        python_callable=execute, op_kwargs={'cluster_id': os.environ['AIRFLOW__EMR_ID']})
     taks_done = python_operator.PythonOperator(
         task_id='done',
         python_callable=done)
