@@ -23,7 +23,9 @@ def execute(cluster_id: str):
         aws_secret_access_key=os.environ['AIRFLOW__AWS__SECRET_KEY'],
     )
 
-    if cluster_id != '':
+    if not cluster_id:
+        LOGGER.info('cluster_id is empty') 
+    else:
         LOGGER.info(f'run jobs on {cluster_id}')
         step = {
             'Name': 'process-avro',
@@ -46,8 +48,6 @@ def execute(cluster_id: str):
         }
 
         action = connection.add_job_flow_steps(JobFlowId=cluster_id, Steps=[step])
-    else:
-        LOGGER.info('cluster_id is empty')
 
 def done():
     LOGGER.info('done flow')
@@ -60,9 +60,6 @@ with DAG('spark-emr-dag',
     taks_start = python_operator.PythonOperator(
         task_id='start',
         python_callable=start)
-    taks_create = python_operator.PythonOperator(
-        task_id='create',
-        python_callable=create)
     taks_execute = python_operator.PythonOperator(
         task_id='execute',
         python_callable=execute, op_kwargs={'cluster_id': os.environ['AIRFLOW__EMR_ID']})
