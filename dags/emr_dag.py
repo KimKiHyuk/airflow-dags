@@ -11,16 +11,16 @@ LOGGER = logging.getLogger("airflow.emr")
 
 def start():
     LOGGER.info('start flow')
-    LOGGER.INFO(os.environ['AIRFLOW__AWS__ACCESS'])
-    LOGGER.INFO(os.environ['AIRFLOW__AWS__SECRET'])
-    LOGGER.INFO(os.environ)
+    LOGGER.INFO(os.environ['AIRFLOW__AWS__ACCESS__KEY'])
+    LOGGER.INFO(os.environ['AIRFLOW__AWS__SECRET__KEY'])
+    LOGGER.INFO(os.environ['AIRFLOW__EMR__ID'])
 
 def execute(cluster_id: str):
     connection = boto3.client(
         'emr',
         region_name='us-east-2',
-        aws_access_key_id=os.environ['AIRFLOW__AWS__ACCESS_KEY'],
-        aws_secret_access_key=os.environ['AIRFLOW__AWS__SECRET_KEY'],
+        aws_access_key_id=os.environ['AIRFLOW__AWS__ACCESS__KEY'],
+        aws_secret_access_key=os.environ['AIRFLOW__AWS__SECRET__KEY'],
     )
 
     if not cluster_id:
@@ -62,7 +62,7 @@ with DAG('spark-emr-dag',
         python_callable=start)
     taks_execute = python_operator.PythonOperator(
         task_id='execute',
-        python_callable=execute, op_kwargs={'cluster_id': os.environ['AIRFLOW__EMR_ID']})
+        python_callable=execute, op_kwargs={'cluster_id': os.environ['AIRFLOW__EMR__ID']})
     taks_done = python_operator.PythonOperator(
         task_id='done',
         python_callable=done)
