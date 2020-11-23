@@ -62,12 +62,12 @@ with DAG('spark-emr-dag',
         python_callable=start)
     taks_execute = python_operator.PythonOperator(
         task_id='execute',
-        python_callable=execute, op_kwargs={'cluster_id': os.environ['AIRFLOW__EMR__ID']})
+        python_callable=execute, op_kwargs={'cluster_id': ''})
     taks_done = python_operator.PythonOperator(
         task_id='done',
         python_callable=done)
     
-    taks_start >> taks_create >> taks_execute >> taks_destroy >> taks_done
+    taks_start >> taks_execute >> taks_done
 
 
 
