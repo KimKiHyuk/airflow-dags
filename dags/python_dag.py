@@ -3,7 +3,11 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 
-import boto3
+from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOperator
+from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreateJobFlowOperator
+from airflow.providers.amazon.aws.operators.emr_terminate_job_flow import EmrTerminateJobFlowOperator
+from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
+
 import os
 import logging
 
@@ -11,7 +15,6 @@ LOGGER = logging.getLogger("airflow.task")
 
 def start():
     LOGGER.info('start flow')
-    LOGGER.info(boto3.__version__)
     print(os.environ)
 
 def create():
