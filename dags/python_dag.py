@@ -7,15 +7,21 @@ from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOper
 from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreateJobFlowOperator
 from airflow.providers.amazon.aws.operators.emr_terminate_job_flow import EmrTerminateJobFlowOperator
 from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
+from airflow.hooks.S3_hook import S3Hook
 
+import boto3
 import os
 import logging
 
 LOGGER = logging.getLogger("airflow.task")
 
+    
 def start():
     LOGGER.info('start flow')
-    print(os.environ)
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket("spark-app-vjal1251")
+    for m in bucket.objects.all():
+        print(m)
 
 def create():
     LOGGER.info('create emr')
