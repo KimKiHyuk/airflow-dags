@@ -53,18 +53,29 @@ JOB_FLOW_OVERRIDES = {
     'Instances': {
         'InstanceGroups': [
             {
-                'Name': 'Master node',
-                'Market': 'SPOT',
-                'InstanceRole': 'MASTER',
-                'InstanceType': 'm4.large',
-                'InstanceCount': 1,
-            }
+                "Name": "Master",
+                "Market": "SPOT",
+                "InstanceRole": "MASTER",
+                "InstanceType": "m4.large",
+                "InstanceCount": 1,
+            },
+            {
+                "Name": "Slave",
+                "Market": "SPOT", # Spot instances are a "use as available" instances
+                "InstanceRole": "CORE",
+                "InstanceType": "m4.large",
+                "InstanceCount": 2,
+            },
         ],
         'KeepJobFlowAliveWhenNoSteps': True,
         'TerminationProtected': False,
     },
     'JobFlowRole': 'EMR_EC2_DefaultRole',
     'ServiceRole': 'EMR_DefaultRole',
+    'Applications': [
+        {"Name": "Hadoop"}, 
+        {"Name": "Spark"}
+    ],
 }
 
 def start():
