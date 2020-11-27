@@ -17,6 +17,7 @@ LOGGER = logging.getLogger("airflow.task")
 
     
 def start():
+    LOGGER.info(os.environ)
     LOGGER.info('start flow')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket("spark-app-vjal1251")
