@@ -39,6 +39,8 @@ DEFAULT_ARGS = {
     'email_on_retry': False,
 }
 
+print(os.environ['region'])
+
 SPARK_STEPS = [
     {
         'Name': 'process-avro',
