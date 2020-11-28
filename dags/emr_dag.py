@@ -28,8 +28,12 @@ from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreate
 from airflow.providers.amazon.aws.operators.emr_terminate_job_flow import EmrTerminateJobFlowOperator
 from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
 from airflow.utils.dates import days_ago
+from airflow.operators import python_operator
 
 import os
+import logging
+
+LOGGER = logging.getLogger("airflow.task")
 
 DEFAULT_ARGS = {
     'owner': 'airflow',
@@ -38,8 +42,6 @@ DEFAULT_ARGS = {
     'email_on_failure': False,
     'email_on_retry': False,
 }
-
-print(os.environ['region'])
 
 SPARK_STEPS = [
     {
@@ -85,6 +87,13 @@ JOB_FLOW_OVERRIDES = {
     'ServiceRole': 'EMR_DefaultRole',
 }
 
+
+    
+def dag_init():
+    LOGGER.info(os.environ)
+    LOGGER.info('start flow')
+
+
 with DAG(
     dag_id='emr_job_flow_manual_steps_dag',
     default_args=DEFAULT_ARGS,
@@ -93,6 +102,10 @@ with DAG(
     schedule_interval='0 3 * * *',
     tags=['example'],
 ) as dag:
+
+    taks_start = python_operator.PythonOperator(
+        task_id='start',
+        python_callable=dag_init)
 
     # [START howto_operator_emr_manual_steps_tasks]
     cluster_creator = EmrCreateJobFlowOperator(
@@ -123,5 +136,5 @@ with DAG(
         aws_conn_id='aws_default',
     )
 
-    cluster_creator >> step_adder >> step_checker >> cluster_remover
+    dag_init >> cluster_creator >> step_adder >> step_checker >> cluster_remover
     # [END howto_operator_emr_manual_steps_tasks]

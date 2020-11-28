@@ -26,7 +26,7 @@ def destory():
 def done():
     LOGGER.info('done flow')
 
-with DAG('spark-submit-dag', 
+with DAG('python-dag', 
     description='Python DAG', 
     schedule_interval=timedelta(days=1), 
     start_date=days_ago(0)) as dag:
