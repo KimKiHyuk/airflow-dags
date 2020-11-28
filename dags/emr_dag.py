@@ -29,6 +29,8 @@ from airflow.providers.amazon.aws.operators.emr_terminate_job_flow import EmrTer
 from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
 from airflow.utils.dates import days_ago
 
+import os
+
 DEFAULT_ARGS = {
     'owner': 'airflow',
     'depends_on_past': False,
@@ -96,6 +98,7 @@ with DAG(
         job_flow_overrides=JOB_FLOW_OVERRIDES,
         aws_conn_id='aws_default',
         emr_conn_id='emr_default',
+        region_name=os.environ['region']
     )
 
     step_adder = EmrAddStepsOperator(
