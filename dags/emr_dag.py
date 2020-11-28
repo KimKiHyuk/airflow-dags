@@ -34,6 +34,7 @@ SPARK_STEPS = [
                     'yarn',
                     '--conf',
                     'spark.yarn.appMasterEnv.DOTNET_ASSEMBLY_SEARCH_PATHS=.',
+                    'spark.yarn.appMasterEnv.DOTNET_WORKER_DIR=/usr/local/bin',
                     's3://spark-app-vjal1251/jars/microsoft-spark-2-4_2.11-1.0.0.jar',
                     's3://spark-app-vjal1251/dll/emrapp.zip',
                     'emrApp',
