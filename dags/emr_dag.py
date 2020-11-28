@@ -21,26 +21,22 @@ Starting by creating a cluster, adding steps/operations, checking steps and fina
 terminating the cluster.
 """
 from datetime import timedelta
-
 from airflow import DAG
-from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOperator
-from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreateJobFlowOperator
-from airflow.providers.amazon.aws.operators.emr_terminate_job_flow import EmrTerminateJobFlowOperator
-from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
+from airflow.contrib.operators.emr_add_steps_operator import EmrAddStepsOperator
+from airflow.contrib.operators.emr_create_job_flow_operator import EmrCreateJobFlowOperator
+from airflow.contrib.operators.emr_terminate_job_flow_operator import EmrTerminateJobFlowOperator
+from airflow.contrib.sensors.emr_step_sensor import EmrStepSensor
 from airflow.utils.dates import days_ago
 from airflow.operators import python_operator
 
 import os
 import logging
 
-LOGGER = logging.getLogger("airflow.task")
+LOGGER = logging.getLogger("airflow.dags.emr")
 
 DEFAULT_ARGS = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'email': ['airflow@example.com'],
-    'email_on_failure': False,
-    'email_on_retry': False,
+    'owner': 'key kim',
+    'depends_on_past': False
 }
 
 SPARK_STEPS = [
@@ -76,8 +72,15 @@ JOB_FLOW_OVERRIDES = {
                 'Name': 'Master node',
                 'Market': 'SPOT',
                 'InstanceRole': 'MASTER',
-                'InstanceType': 'm1.medium',
+                'InstanceType': 'm4.large',
                 'InstanceCount': 1,
+            },
+            {
+                'Name': 'Slave node',
+                'Market': 'SPOT',
+                'InstanceRole': 'CORE',
+                'InstanceType': 'm4.large',
+                'InstanceCount': 2,
             }
         ],
         'KeepJobFlowAliveWhenNoSteps': True,
@@ -95,25 +98,23 @@ def dag_init():
 
 
 with DAG(
-    dag_id='emr_job_flow_manual_steps_dag',
+    dag_id='emr-dag',
     default_args=DEFAULT_ARGS,
     dagrun_timeout=timedelta(hours=2),
     start_date=days_ago(1),
-    schedule_interval='0 3 * * *',
-    tags=['example'],
+    schedule_interval=timedelta(hours=1),
+    tags=['sparm-emr'],
 ) as dag:
 
     dag_init = python_operator.PythonOperator(
         task_id='start',
         python_callable=dag_init)
 
-    # [START howto_operator_emr_manual_steps_tasks]
     cluster_creator = EmrCreateJobFlowOperator(
         task_id='create_job_flow',
         job_flow_overrides=JOB_FLOW_OVERRIDES,
         aws_conn_id='my_aws',
         emr_conn_id='emr_default',
-        region_name='us-east-2'
     )
 
     step_adder = EmrAddStepsOperator(
@@ -137,4 +138,3 @@ with DAG(
     )
 
     dag_init >> cluster_creator >> step_adder >> step_checker >> cluster_remover
-    # [END howto_operator_emr_manual_steps_tasks]

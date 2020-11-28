@@ -7,7 +7,7 @@ import boto3
 import os
 import logging
 
-LOGGER = logging.getLogger("airflow.task")
+LOGGER = logging.getLogger("airflow.dags.python")
 
     
 def start():
