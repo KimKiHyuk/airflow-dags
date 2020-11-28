@@ -113,6 +113,7 @@ with DAG(
         job_flow_overrides=JOB_FLOW_OVERRIDES,
         aws_conn_id='my_aws',
         emr_conn_id='emr_default',
+        region_name='us-east-2'
     )
 
     step_adder = EmrAddStepsOperator(
