@@ -103,7 +103,7 @@ with DAG(
     tags=['example'],
 ) as dag:
 
-    taks_start = python_operator.PythonOperator(
+    dag_init = python_operator.PythonOperator(
         task_id='start',
         python_callable=dag_init)
 
@@ -113,7 +113,6 @@ with DAG(
         job_flow_overrides=JOB_FLOW_OVERRIDES,
         aws_conn_id='aws_default',
         emr_conn_id='emr_default',
-        region_name=os.environ['region']
     )
 
     step_adder = EmrAddStepsOperator(
