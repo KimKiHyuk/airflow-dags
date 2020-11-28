@@ -27,11 +27,13 @@ SPARK_STEPS = [
                 'Args': [
                     'spark-submit',
                     '--packages',
-                    'org.apache.spark:spark-avro_2.11:2.4.4', 
+                    'org.apache.spark:spark-avro_2.11:2.4.6', 
                     '--class',
                     'org.apache.spark.deploy.dotnet.DotnetRunner',
                     '--master',
                     'yarn',
+                    '--conf',
+                    'spark.yarn.appMasterEnv.DOTNET_ASSEMBLY_SEARCH_PATHS=./emrapp/',
                     's3://spark-app-vjal1251/jars/microsoft-spark-2-4_2.11-1.0.0.jar',
                     's3://spark-app-vjal1251/dll/emrapp.zip',
                     'emrApp',
@@ -44,7 +46,7 @@ SPARK_STEPS = [
 
 JOB_FLOW_OVERRIDES = {
     'Name': 'ParseSQL',
-    'ReleaseLabel': 'emr-5.27.0',
+    'ReleaseLabel': 'emr-5.31.0',
     "LogUri": 's3://aws-logs-417699346993-us-east-2/elasticmapreduce/',
     'Instances': {
         'InstanceGroups': [
