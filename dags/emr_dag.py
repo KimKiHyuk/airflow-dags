@@ -6,6 +6,7 @@ from airflow.contrib.operators.emr_terminate_job_flow_operator import EmrTermina
 from airflow.contrib.sensors.emr_step_sensor import EmrStepSensor
 from airflow.utils.dates import days_ago
 from airflow.operators import python_operator
+from airflow.utils import trigger_rule
 
 import os
 import logging
@@ -65,6 +66,19 @@ JOB_FLOW_OVERRIDES = {
         'KeepJobFlowAliveWhenNoSteps': True,
         'TerminationProtected': False,
     },
+    "BootstrapActions": [
+        {
+            'Name': 'Install Microsoft.Spark.Worker',
+            'ScriptBootstrapAction': {
+                'Path': "s3://spark-app-vjal1251/install-worker.sh",
+                'Args': [
+                    "aws",
+                    "s3://spark-app-vjal1251/Microsoft.Spark.Worker.netcoreapp3.1.linux-x64-1.0.0.tar.gz",
+                    "/usr/local/bin"
+                ]
+            }
+        },
+    ],
     'JobFlowRole': 'EMR_EC2_DefaultRole',
     'ServiceRole': 'EMR_DefaultRole',
 }
@@ -115,5 +129,8 @@ with DAG(
         job_flow_id="{{ task_instance.xcom_pull(task_ids='create_job_flow', key='return_value') }}",
         aws_conn_id='my_aws',
     )
+
+    cluster_remover.trigger_rule = trigger_rule.TriggerRule.ALL_DONE
+
 
     dag_init >> cluster_creator >> step_adder >> step_checker >> cluster_remover

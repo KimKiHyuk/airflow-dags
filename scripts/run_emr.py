@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
 
     step = {
-            'Name': 'process-avro',
+            'Name': 'process-avro-1',
             'ActionOnFailure': 'CONTINUE',
             'HadoopJarStep': {
                     'Jar': 'command-runner.jar',
