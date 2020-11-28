@@ -33,8 +33,7 @@ SPARK_STEPS = [
                     '--master',
                     'yarn',
                     '--conf',
-                    'spark.yarn.appMasterEnv.DOTNET_ASSEMBLY_SEARCH_PATHS=.',
-                    'spark.yarn.appMasterEnv.DOTNET_WORKER_DIR=/usr/local/bin',
+                    'spark.yarn.appMasterEnv.DOTNET_ASSEMBLY_SEARCH_PATHS=./bin/Release/netcoreapp3.1',
                     's3://spark-app-vjal1251/jars/microsoft-spark-2-4_2.11-1.0.0.jar',
                     's3://spark-app-vjal1251/dll/emrapp.zip',
                     'emrApp',
@@ -77,7 +76,7 @@ JOB_FLOW_OVERRIDES = {
                 'Args': [
                     "aws",
                     "s3://spark-app-vjal1251/Microsoft.Spark.Worker.netcoreapp3.1.linux-x64-1.0.0.tar.gz",
-                    "/usr/local/bin"
+                    "/usr/local/bin/"
                 ]
             }
         },

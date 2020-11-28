@@ -23,7 +23,7 @@ if __name__ == "__main__":
                     'Args': [
                         'spark-submit',
                         '--packages',
-                        'org.apache.spark:spark-avro_2.11:2.4.4', 
+                        'org.apache.spark:spark-avro_2.11:2.4.6', 
                         '--class',
                         'org.apache.spark.deploy.dotnet.DotnetRunner',
                         '--master',
