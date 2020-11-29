@@ -33,7 +33,7 @@ SPARK_STEPS = [
                     '--master',
                     'yarn',
                     's3://spark-app-vjal1251/jars/microsoft-spark-2-4_2.11-1.0.0.jar',
-                    's3://spark-app-vjal1251/dll/emrapp.zip',
+                    's3://spark-app-vjal1251/dll/emrApp_LKG.zip',
                     'emrApp',
                     's3a://spark-data-vjal1251/topics/orders/partition=0', 
                     's3a://spark-data-vjal1251/result']
